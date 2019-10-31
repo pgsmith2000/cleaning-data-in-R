@@ -227,7 +227,7 @@ head(bmi_cc)
 
 - Column headers are values, not variable names
   + eye colors as column names with boolean values in rows
--Variable are stored in both rows and columns
+- Variable are stored in both rows and columns
   + pet counts stored as key value pair in two columns. n_dogs and n_cats should be seperate columns
 - Multiple variables are stored in one column
 sex_age column with M.34, F.55 as values
@@ -239,4 +239,483 @@ This should be split into two tables with key like most sql beginner data sets o
 
 
 ## Preparing data for analysis
+
+### Type conversions
+
+- common type conversions
+  + as.character
+  + as.numeric
+  + as.integer
+  + as.factor
+  + as.logical
+- also a log of date conversions in lubridate
+  + ymd, mdy, hms, ymd_hms, etc
+  
+### Types of variables in R
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Make this evaluate to character
+class(as.character('true'))
+
+# Make this evaluate to numeric
+class(as.numeric("8484.00"))
+
+# Make this evaluate to integer
+class(as.integer(99))
+
+# Make this evaluate to factor
+class(as.factor("factor"))
+
+# Make this evaluate to logical
+class(as.logical("FALSE"))
+
+```
+
+### Common type conversions
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+# load student data
+students <- readRDS('data/students.rds')
+
+# look at the structure
+str(students)
+
+# Coerce Grades to character
+students$Grades <- as.character(students$Grades)
+
+# Coerce Medu to factor
+students$Medu <- as.factor(students$Medu)
+
+# Coerce Fedu to factor
+students$Fedu <- as.factor(students$Medu) 
+    
+# Look at students once more with str()
+str(students)
+
+```
+
+### Working with dates
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+# load students2 data
+students2 <- readRDS('data/students2.rds')
+
+# Preview students2 with str()
+str(students2)
+
+# load lubridate
+library(lubridate)
+
+# Parse as date
+dmy("17 Sep 2015")
+
+# Parse as date and time (with no seconds!)
+mdy_hm("July 15, 2012 12:56")
+
+# Coerce dob to a date (with no time)
+students2$dob <- ymd(students2$dob)
+
+# Coerce nurse_visit to a date and time
+students2$nurse_visit <- ymd_hms(students2$nurse_visit)
+    
+# Look at students2 once more with str()
+str(students2)
+
+```
+
+### Trimming and padding strings
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Load stringr
+library(stringr)
+
+# Trim all leading and trailing whitespace
+str_trim(c("   Filip ", "Nick  ", " Jonathan"))
+
+# Pad these strings with leading zeros
+str_pad(c("23485W", "8823453Q", "994Z"), width=9, side='left', pad="0")
+
+```
+
+### Upper and lower case
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+states <- c("al", "ak", "az", "ar", "ca", "co", "ct", "de", "fl", "ga", 
+"hi", "id", "il", "in", "ia", "ks", "ky", "la", "me", "md", "ma", 
+"mi", "mn", "ms", "mo", "mt", "ne", "nv", "nh", "nj", "nm", "ny", 
+"nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", 
+"ut", "vt", "va", "wa", "wv", "wi", "wy")
+
+# Make states all uppercase and save result to states_upper
+states_upper <- toupper(states)
+states_upper
+
+# Make states_upper all lowercase again
+states_lower <- tolower(states_upper)
+states_lower
+
+```
+
+### Finding and replacing strings
+
+```{r}
+
+# Look at the head of students2
+head(students2)
+
+# Detect all dates of birth (dob) in 1997
+str_detect(students2$dob, "1997")
+
+# In the sex column, replace "F" with "Female"...
+students2$sex <- str_replace(students2$sex, "F", "Female")
+
+# ...And "M" with "Male"
+students2$sex <- str_replace(students2$sex, "M", "Male")
+
+# View the head of students2
+head(students2)
+
+```
+
+### Missing and special values
+
+- There may be complete observations that are missing
+  + This can happen if data ingestion process is interupted.
+- NA, NaN, Inf, #N/A (Excel), single dot (SPSS,SAS), -1, -99999
+- Could be anything really
+
+### Finding missing values
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Load social data
+social_df <- readRDS('data/social_df.rds')
+
+# Use is.na() on the full social_df to spot all NAs
+is.na(social_df)
+
+# Use the any() function to ask whether there are any NAs in the data
+any(is.na(social_df))
+
+# Look at a summary() of the dataset
+summary(social_df)
+
+# use table() to look at the status column
+table(social_df$status)
+
+```
+
+### Dealing with missing values
+
+```{r}
+
+# Replace empty strings in status with NA
+social_df$status[social_df$status == ""] <- NA
+
+# take a look at data again
+social_df
+
+# Use complete.cases() to see which rows have no missing values
+complete.cases(social_df)
+
+# Use na.omit() to remove all rows with any missing values
+na.omit(social_df)
+
+```
+
+### Outliers and obvious errors
+
+- Could be from data entry errors, or some measurement error
+- *summary* and visualizations like *hist* or *boxplot* are good for finding these
+
+### Dealing with outliers and obvious errors
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# load the student3 data
+students3 <- readRDS('data/students3.rds')
+
+# use summary to look at the data
+summary(students3)
+
+# use a histogram to help spot outliers in the age variable
+hist(students3$age)
+
+# Do the same thing with the absences variable
+hist(students3$absences)
+
+# Next make a histogram of absences, but force the zeros to be bucketed to the right of zero
+hist(students3$absences, right=F)
+
+```
+
+### Another look at strange values
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Look at a boxplot of age
+boxplot(students3$age)
+
+# Look at a boxplot of absences
+boxplot(students3$absences)
+
+```
+
+## Putting it all together
+
+### Get a feel for the data
+- First step is to look at and summmarize the data to see whats there
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Verify that weather is a data.frame
+class(weather)
+
+# Check the dimensions
+dim(weather)
+
+# Look at the column names
+colnames(weather)
+
+```
+
+### Summarize the data
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Look at the structure of the data
+str(weather)
+
+# use glimpse() from dplyr to do the same
+glimpse(weather)
+
+# Summarize the data values
+summary(weather)
+
+```
+
+### Take a closer look
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Check out the first 6 rows
+head(weather)
+
+# Look at the first 15 rows
+head(weather, 15)
+
+# Then look at the last 6 rows
+tail(weather)
+
+# tail() the last 10 rows
+tail(weather, 10)
+
+```
+
+### Column names are values too
+- Next steps are to tidy the data columns and rows
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+## Load the tidyr package
+library(tidyr)
+
+# Gather the day columns
+weather2 <- gather(weather, day, value, c(X1:X31), na.rm = TRUE)
+
+# Look at the first six rows
+head(weather2)
+
+```
+
+### Values are variable names
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# First remove column of row names
+weather2 <- weather2[, -1]
+
+# Then spread the measure data
+weather3 <- spread(weather2, measure, value)
+
+# look at the first 6 rowws
+head(weather3)
+
+```
+
+### Clean up dates
+- Next we clean up the variable types
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+## The following packages are already loaded
+## tidyr dplyr stringr lubridate
+
+head(weather3)
+
+# Remove X's from day column
+weather3$day <- str_replace(weather3$day, "X","")
+
+head(weather3[1:5])
+
+# Unite the year, month, and day columns
+weather4 <- unite(weather3, date, year, month, day, sep = "-")
+
+head(weather4[1:5])
+
+# Convert date column to proper date format using lubridates's ymd()
+weather4$date <- ymd(weather4$date)
+
+# look at the structure
+str(weather4[1:5])
+
+# Rearrange columns using dplyr's select()
+weather5 <- select(weather4, date, Events, CloudCover:WindDirDegrees)
+
+# Look at the first 6 rows
+head(weather5)
+
+```
+### A closer look at column types
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Check out the structure of weather5
+str(weather5)
+
+# Examine the first 20 rows of weather5. Are most of the characters numeric?
+head(weather5, 20)
+
+# Try to convert PrecipitationIn to numeric
+as.numeric(weather5$PrecipitationIn)
+
+# Need to do this another way
+
+```
+
+### Column type conversions
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Replace T with 0 (T = trace)
+weather5$PrecipitationIn <- str_replace(weather5$PrecipitationIn, "T", "0")
+
+# Convert characters to numerics
+weather6 <- mutate_each(weather5, funs(as.numeric), CloudCover:WindDirDegrees)
+
+# Look at result
+str(weather6)
+
+```
+
+### Find missing values
+- Now we dig deeper to find missing values and errors
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Count missing values
+sum(is.na(weather6))
+
+# Find missing values
+summary(weather6)
+
+# Find indices of NAs in Max.Gust.SpeedMPH
+ind <- which(is.na(weather6$Max.Gust.SpeedMPH))
+
+# Look at the full rows for records missing Max.Gust.SpeedMPH
+weather6[ind, ]
+
+```
+
+### An obvious error
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Look at the distributions for all of the variables
+summary(weather6)
+
+# Find row with Max.Humidity of 1000
+ind <- which(weather6$Max.Humidity == 1000)
+
+# Look at the data for that day
+weather6[ind, ]
+
+# Change 1000 to 100
+weather6$Max.Humidity[ind] <- 100 
+
+```
+
+### Another obvious error
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Look at a summary of Mean.VisibilityMiles
+summary(weather6$Mean.VisibilityMiles)
+
+# Get index of row with -1 value
+ind <- which(weather6$Mean.VisibilityMiles == -1) 
+
+# Look at full row
+weather6[ind,]
+
+# Set Mean.VisibilityMiles to the appropriate value
+weather6$Mean.VisibilityMiles[ind] <- 10
+
+```
+
+### Check other extreme values
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Run a summary of all of the data once more
+summary(weather6)
+
+# Make a histogram for MeanDew.PointF
+hist(weather6$MeanDew.PointF)
+
+# Now look at histogram for Min.TemperatureF
+hist(weather6$Min.TemperatureF)
+
+# Compare this to histogram for Mean.TemperatureF
+hist(weather6$Mean.TemperatureF)
+
+```
+
+### Finishing touches
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# Create a vector of better column names
+new_colnames <- c("date", "events", "cloud_cover", "max_dew_point_f", 
+  "max_gust_speed_mph", "max_humidity", "max_sea_level_pressure_in", 
+  "max_temperature_f", "max_visibility_miles", "max_wind_speed_mph", 
+  "mean_humidity", "mean_sea_level_pressure_in", "mean_temperature_f", 
+  "mean_visibility_miles", "mean_wind_speed_mph", "mean_dew_point_f", 
+  "min_dew_point_f", "min_humidity", "min_sea_level_pressure_in", 
+  "min_temperature_f", "min_visibility_miles", "precipitation_in", 
+  "wind_dir_degrees"
+)
+
+# replace the names
+names(weather6) <- new_colnames
+
+# Replace empty cells in events column
+weather6$events[weather6$events == ""] <- "None" 
+    
+# Look at the first 6 rows of weather6
+head(weather6)
+
+```
+
+### Now your data are clean!
+
+- each row is a single observation (day of year)
+- each column is a variable
+- date is a date type
+- events are more clear and explicit
+- missing values are known
+- data errors have been found and fixed
 
