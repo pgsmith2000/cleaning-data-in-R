@@ -743,11 +743,15 @@ plot(bmi$Y1980, bmi$Y2008)
 ### Introduction to tidyr
 
 Could do a whole notebook on this package, it does a lot Here we really
-just use: - *gather* combines multiple columns into two rows with key
-and value - *spread* moves key value columns to multiple columns with
-keys as column names - *separate* splits a column by \_ or whatever
-seperator you choose to multiple columns - *unite* combines multiple
-columns to one column with \_ as the seperator
+just use:
+
+  - *gather* combines multiple columns into two rows with key and value
+  - *spread* moves key value columns to multiple columns with keys as
+    column names
+  - *separate* splits a column by \_ or whatever seperator you choose to
+    multiple columns
+  - *unite* combines multiple columns to one column with \_ as the
+    seperator
 
 ### Gathering columns into key-value-pairs
 
