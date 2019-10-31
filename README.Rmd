@@ -44,7 +44,7 @@ Essential R commands:
 - year and month and day should be one data column
 - measures are melted but should be each in a column
 - and so on…
-```{r messyData, echo=TRUE, message=TRUE, warning=TRUE}
+```{r echo=TRUE, message=TRUE, warning=TRUE}
 
 # load and prep sample tables
 weather <- read.csv("data/weather.csv", header=TRUE, sep=",", as.is=TRUE)
@@ -64,7 +64,7 @@ str(weather)
 - There is a lot cleaned up here
 - We will clean this data set in the last section
 
-```{r cleanData, echo=TRUE, message=TRUE, warning=TRUE}
+```{r echo=TRUE, message=TRUE, warning=TRUE}
 
 # load and prep sample table
 weather_clean <- read.csv("./data/weather_clean.csv", header=TRUE, sep=",")
@@ -83,16 +83,70 @@ str(weather_clean)
 
 ### Exploring raw data
 
-
-### Understanding the structure of the data
+Using class, dim, names, str, glimpse, and summary
 
 ### Looking at the data
 
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+# load the data
+bmi <- read.csv("./data/bmi.csv", header=TRUE, sep=",")
+bmi$Country <- as.character(bmi$Country)
 
+# look at the class
+class(bmi)
+
+# get the dimensions
+dim(bmi)
+
+# view the column names
+colnames(bmi)
+```
+
+### Understanding the structure of the data
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+# look at the structure of the data set
+str(bmi)
+
+# load the dplyr library
+library(dplyr)
+
+# use dplyr to look at the structure
+glimpse(bmi)
+
+# view a summary of the variables
+summary(bmi)
+
+```
+
+### Look at the data
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# look at the first 6 rows
+head(bmi)
+
+# look at the first 15 rows
+head(bmi, 15)
+
+# look at the last 6 rows
+tail(bmi)
+
+# look at the last 10 rows
+tail(bmi, 10)
+```
 
 ### Visualizing the data
 
+```{r echo=TRUE, message=TRUE, warning=TRUE}
 
+# histogram of BMIs from 2008
+hist(bmi$Y2008)
+
+# scatter plot comparing BMIs from 1980 to those from 2008
+plot(bmi$Y1980, bmi$Y2008)
+```
 
 ## Tidying data
 ## Preparing data for analysis
+
