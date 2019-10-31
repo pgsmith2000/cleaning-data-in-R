@@ -47,7 +47,7 @@ Essential R commands:
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
 
 # load and prep sample tables
-weather <- read.csv("data/weather.csv", header=TRUE, sep=",", as.is=TRUE)
+weather <- readRDS('data/weather.rds')
 
 # first look at a messy data set
 # look at the first 6 rows
@@ -67,10 +67,7 @@ str(weather)
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
 
 # load and prep sample table
-weather_clean <- read.csv("./data/weather_clean.csv", header=TRUE, sep=",")
-weather_clean[3:23] <- lapply(weather_clean[3:23], as.numeric)
-weather_clean$events <- as.character(weather_clean$event)
-weather_clean$date <- as.POSIXct(weather_clean$date, tz="", format("%m/%d/%Y"))
+weather_clean <- readRDS('data/weather_clean.rds')
 
 # look at the first 6 rows
 head(weather_clean)
@@ -89,33 +86,33 @@ Using class, dim, names, str, glimpse, and summary
 
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
 # load the data
-bmi <- read.csv("./data/bmi.csv", header=TRUE, sep=",")
-bmi$Country <- as.character(bmi$Country)
+bmi <- readRDS('data/bmi.rds')
 
-# look at the class
+# look at the classgli
 class(bmi)
 
 # get the dimensions
 dim(bmi)
 
 # view the column names
-colnames(bmi)
+names(bmi)
 ```
 
 ### Understanding the structure of the data
 
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
-# look at the structure of the data set
+# Check the structure of bmi
 str(bmi)
 
-# load the dplyr library
+# Load dplyr
 library(dplyr)
 
-# use dplyr to look at the structure
+
+# Check the structure of bmi, the dplyr way
 glimpse(bmi)
 
-# view a summary of the variables
-summary(bmi)
+# View a summary of bmi
+summary (bmi)
 
 ```
 
@@ -123,16 +120,16 @@ summary(bmi)
 
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
 
-# look at the first 6 rows
+# View the first 6 rows
 head(bmi)
 
-# look at the first 15 rows
+# View the first 15 rows
 head(bmi, 15)
 
-# look at the last 6 rows
-tail(bmi)
+# View the last 6 rows
+tail(bmi, 6)
 
-# look at the last 10 rows
+# View the last 10 rows
 tail(bmi, 10)
 ```
 
@@ -140,11 +137,12 @@ tail(bmi, 10)
 
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
 
-# histogram of BMIs from 2008
+# Histogram of BMIs from 2008
 hist(bmi$Y2008)
 
-# scatter plot comparing BMIs from 1980 to those from 2008
+# Scatter plot comparing BMIs from 1980 to those from 2008
 plot(bmi$Y1980, bmi$Y2008)
+
 ```
 
 ## Tidying data
@@ -199,7 +197,31 @@ head(bmi_wide)
 
 ### Separating columns
 
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+# load the bmi_cc file
+bmi_cc <- readRDS('data/bmi_cc.rds')
+
+# view the head
+head(bmi_cc)
+
+# use separate to split Country_ISO
+bmi_cc_clean <- separate(bmi_cc, col = Country_ISO, 
+                         into = c("Country", "ISO"), sep = "/")
+
+# view the result
+head(bmi_cc_clean)
+```
+
+
 ### Uniting columns
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+# use unite to join the two fields with a "-"
+bmi_cc <- unite(bmi_cc_clean, Country_ISO, Country, ISO, sep = "-")
+
+# View the results
+head(bmi_cc)
+```
 
 ### Addressing common symptoms of messy data
 

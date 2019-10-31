@@ -74,7 +74,7 @@ Essential R commands:
 
 ``` r
 # load and prep sample tables
-weather <- read.csv("data/weather.csv", header=TRUE, sep=",", as.is=TRUE)
+weather <- readRDS('data/weather.rds')
 
 # first look at a messy data set
 # look at the first 6 rows
@@ -88,13 +88,20 @@ head(weather)
     ## 4 4 2014    12    Max.Dew.PointF 46 40 49 24 37 45 36 28 49  45  37  28
     ## 5 5 2014    12    MeanDew.PointF 40 27 42 21 25 40 20 16 41  39  31  27
     ## 6 6 2014    12     Min.DewpointF 26 17 24 13 12 36 -3  3 28  37  27  25
-    ##   X13 X14 X15 X16 X17 X18 X19 X20 X28 X29 X30 X31
-    ## 1  42  45  42  44  49  44  37  36  52  41  30  30
-    ## 2  37  39  37  40  45  40  33  32  46  36  26  25
-    ## 3  32  33  32  35  41  36  29  27  40  30  22  20
-    ## 4  28  29  33  42  46  34  25  30  42  26  10   8
-    ## 5  26  27  29  36  41  30  22  24  35  20   4   5
-    ## 6  24  25  27  30  32  26  20  20  27  10  -6   1
+    ##   X13 X14 X15 X16 X17 X18 X19 X20 X21 X22 X23 X24 X25 X26 X27 X28 X29 X30
+    ## 1  42  45  42  44  49  44  37  36  36  44  47  46  59  50  52  52  41  30
+    ## 2  37  39  37  40  45  40  33  32  33  39  45  44  52  44  45  46  36  26
+    ## 3  32  33  32  35  41  36  29  27  30  33  42  41  44  37  38  40  30  22
+    ## 4  28  29  33  42  46  34  25  30  30  39  45  46  58  31  34  42  26  10
+    ## 5  26  27  29  36  41  30  22  24  27  34  42  44  43  29  31  35  20   4
+    ## 6  24  25  27  30  32  26  20  20  25  25  37  41  29  28  29  27  10  -6
+    ##   X31
+    ## 1  30
+    ## 2  25
+    ## 3  20
+    ## 4   8
+    ## 5   5
+    ## 6   1
 
 ``` r
 # look at the last 6 rows
@@ -108,27 +115,27 @@ tail(weather)
     ## 284 284 2015    12         CloudCover    7 <NA> <NA> <NA> <NA> <NA> <NA>
     ## 285 285 2015    12             Events Rain <NA> <NA> <NA> <NA> <NA> <NA>
     ## 286 286 2015    12     WindDirDegrees  109 <NA> <NA> <NA> <NA> <NA> <NA>
-    ##       X8   X9  X10  X11  X12  X13  X14  X15  X16  X17  X18  X19  X20  X28
+    ##       X8   X9  X10  X11  X12  X13  X14  X15  X16  X17  X18  X19  X20  X21
     ## 281 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
     ## 282 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
     ## 283 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
     ## 284 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
     ## 285 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
     ## 286 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
-    ##      X29  X30  X31
-    ## 281 <NA> <NA> <NA>
-    ## 282 <NA> <NA> <NA>
-    ## 283 <NA> <NA> <NA>
-    ## 284 <NA> <NA> <NA>
-    ## 285 <NA> <NA> <NA>
-    ## 286 <NA> <NA> <NA>
+    ##      X22  X23  X24  X25  X26  X27  X28  X29  X30  X31
+    ## 281 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
+    ## 282 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
+    ## 283 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
+    ## 284 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
+    ## 285 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
+    ## 286 <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA> <NA>
 
 ``` r
 # look at a summary of the data
 str(weather)
 ```
 
-    ## 'data.frame':    286 obs. of  28 variables:
+    ## 'data.frame':    286 obs. of  35 variables:
     ##  $ X      : int  1 2 3 4 5 6 7 8 9 10 ...
     ##  $ year   : int  2014 2014 2014 2014 2014 2014 2014 2014 2014 2014 ...
     ##  $ month  : int  12 12 12 12 12 12 12 12 12 12 ...
@@ -153,6 +160,13 @@ str(weather)
     ##  $ X18    : chr  "44" "40" "36" "34" ...
     ##  $ X19    : chr  "37" "33" "29" "25" ...
     ##  $ X20    : chr  "36" "32" "27" "30" ...
+    ##  $ X21    : chr  "36" "33" "30" "30" ...
+    ##  $ X22    : chr  "44" "39" "33" "39" ...
+    ##  $ X23    : chr  "47" "45" "42" "45" ...
+    ##  $ X24    : chr  "46" "44" "41" "46" ...
+    ##  $ X25    : chr  "59" "52" "44" "58" ...
+    ##  $ X26    : chr  "50" "44" "37" "31" ...
+    ##  $ X27    : chr  "52" "45" "38" "34" ...
     ##  $ X28    : chr  "52" "46" "40" "42" ...
     ##  $ X29    : chr  "41" "36" "30" "26" ...
     ##  $ X30    : chr  "30" "26" "22" "10" ...
@@ -168,10 +182,7 @@ str(weather)
 
 ``` r
 # load and prep sample table
-weather_clean <- read.csv("./data/weather_clean.csv", header=TRUE, sep=",")
-weather_clean[3:23] <- lapply(weather_clean[3:23], as.numeric)
-weather_clean$events <- as.character(weather_clean$event)
-weather_clean$date <- as.POSIXct(weather_clean$date, tz="", format("%m/%d/%Y"))
+weather_clean <- readRDS('data/weather_clean.rds')
 
 # look at the first 6 rows
 head(weather_clean)
@@ -320,10 +331,9 @@ Using class, dim, names, str, glimpse, and summary
 
 ``` r
 # load the data
-bmi <- read.csv("./data/bmi.csv", header=TRUE, sep=",")
-bmi$Country <- as.character(bmi$Country)
+bmi <- readRDS('data/bmi.rds')
 
-# look at the class
+# look at the classgli
 class(bmi)
 ```
 
@@ -338,7 +348,7 @@ dim(bmi)
 
 ``` r
 # view the column names
-colnames(bmi)
+names(bmi)
 ```
 
     ##  [1] "Country" "Y1980"   "Y1981"   "Y1982"   "Y1983"   "Y1984"   "Y1985"  
@@ -350,7 +360,7 @@ colnames(bmi)
 ### Understanding the structure of the data
 
 ``` r
-# look at the structure of the data set
+# Check the structure of bmi
 str(bmi)
 ```
 
@@ -387,7 +397,7 @@ str(bmi)
     ##  $ Y2008  : num  20.6 26.4 24.6 27.6 22.3 ...
 
 ``` r
-# load the dplyr library
+# Load dplyr
 library(dplyr)
 ```
 
@@ -403,7 +413,7 @@ library(dplyr)
     ##     intersect, setdiff, setequal, union
 
 ``` r
-# use dplyr to look at the structure
+# Check the structure of bmi, the dplyr way
 glimpse(bmi)
 ```
 
@@ -441,8 +451,8 @@ glimpse(bmi)
     ## $ Y2008   <dbl> 20.62058, 26.44657, 24.59620, 27.63048, 22.25083, 25.7...
 
 ``` r
-# view a summary of the variables
-summary(bmi)
+# View a summary of bmi
+summary (bmi)
 ```
 
     ##    Country              Y1980           Y1981           Y1982      
@@ -505,7 +515,7 @@ summary(bmi)
 ### Look at the data
 
 ``` r
-# look at the first 6 rows
+# View the first 6 rows
 head(bmi)
 ```
 
@@ -539,7 +549,7 @@ head(bmi)
     ## 6 25.05857 25.13039 25.20713 25.29898 25.39965 25.51382 25.64247 25.76602
 
 ``` r
-# look at the first 15 rows
+# View the first 15 rows
 head(bmi, 15)
 ```
 
@@ -609,8 +619,8 @@ head(bmi, 15)
     ## 15 25.68910 25.77615 25.87020 25.95660 26.06074 26.16874 26.27575 26.38439
 
 ``` r
-# look at the last 6 rows
-tail(bmi)
+# View the last 6 rows
+tail(bmi, 6)
 ```
 
     ##                Country    Y1980    Y1981    Y1982    Y1983    Y1984
@@ -650,7 +660,7 @@ tail(bmi)
     ## 199 21.93371 21.97405 22.02660
 
 ``` r
-# look at the last 10 rows
+# View the last 10 rows
 tail(bmi, 10)
 ```
 
@@ -713,14 +723,14 @@ tail(bmi, 10)
 ### Visualizing the data
 
 ``` r
-# histogram of BMIs from 2008
+# Histogram of BMIs from 2008
 hist(bmi$Y2008)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
-# scatter plot comparing BMIs from 1980 to those from 2008
+# Scatter plot comparing BMIs from 1980 to those from 2008
 plot(bmi$Y1980, bmi$Y2008)
 ```
 
@@ -863,7 +873,56 @@ head(bmi_wide)
 
 ### Separating columns
 
+``` r
+# load the bmi_cc file
+bmi_cc <- readRDS('data/bmi_cc.rds')
+
+# view the head
+head(bmi_cc)
+```
+
+    ##              Country_ISO  year  bmi_val
+    ## 1         Afghanistan/AF Y1980 21.48678
+    ## 2             Albania/AL Y1980 25.22533
+    ## 3             Algeria/DZ Y1980 22.25703
+    ## 4             Andorra/AD Y1980 25.66652
+    ## 5              Angola/AO Y1980 20.94876
+    ## 6 Antigua and Barbuda/AG Y1980 23.31424
+
+``` r
+# use separate to split Country_ISO
+bmi_cc_clean <- separate(bmi_cc, col = Country_ISO, 
+                         into = c("Country", "ISO"), sep = "/")
+
+# view the result
+head(bmi_cc_clean)
+```
+
+    ##               Country ISO  year  bmi_val
+    ## 1         Afghanistan  AF Y1980 21.48678
+    ## 2             Albania  AL Y1980 25.22533
+    ## 3             Algeria  DZ Y1980 22.25703
+    ## 4             Andorra  AD Y1980 25.66652
+    ## 5              Angola  AO Y1980 20.94876
+    ## 6 Antigua and Barbuda  AG Y1980 23.31424
+
 ### Uniting columns
+
+``` r
+# use unite to join the two fields with a "-"
+bmi_cc <- unite(bmi_cc_clean, Country_ISO, Country, ISO, sep = "-")
+
+# View the results
+head(bmi_cc)
+```
+
+    ##              Country_ISO  year  bmi_val
+    ## 1         Afghanistan-AF Y1980 21.48678
+    ## 2             Albania-AL Y1980 25.22533
+    ## 3             Algeria-DZ Y1980 22.25703
+    ## 4             Andorra-AD Y1980 25.66652
+    ## 5              Angola-AO Y1980 20.94876
+    ## 6 Antigua and Barbuda-AG Y1980 23.31424
 
 ### Addressing common symptoms of messy data
 
