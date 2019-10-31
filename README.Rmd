@@ -148,5 +148,72 @@ plot(bmi$Y1980, bmi$Y2008)
 ```
 
 ## Tidying data
+
+### Introduction to tidy data
+
+- Hadley Wickham’s paper on this from 2014 is the best resource for understanding what is tidy data
+- Essentially it mean one row per observation and one type of observation per table
+  + Observations as rows
+  + Variables as columns
+  + One type of observational unit per table
+- If you see values in the column names like months or years, or stock names, you have untidy data
+
+### Introduction to tidyr
+
+Could do a whole notebook on this package, it does a lot
+Here we really just use:
+- *gather* combines multiple columns into two rows with key and value
+- *spread* moves key value columns to multiple columns with keys as column names
+- *separate* splits a column by _ or whatever seperator you choose to multiple columns
+- *unite* combines multiple columns to one column with _ as the seperator
+
+### Gathering columns into key-value-pairs
+
+```{r echo=TRUE, message=TRUE, warning=TRUE}
+
+# load tidyr
+library(tidyr)
+
+# look at the first 6 rows
+head(bmi)
+
+# Apply gather() to bmi and save the result as bmi_long
+bmi_long <- gather(bmi, year, bmi_val, -Country)
+
+# View the first 20 rows of the result
+head(bmi_long,20)
+
+```
+
+### Spreading key-value pairs
+
+```{r echo=TRUE, message=TRUE, warning=TRUE, paged.print=FALSE}
+
+# Apply spread() to bmi_long
+bmi_wide <- spread(bmi_long, year, bmi_val)
+
+# View the head of bmi_wide
+head(bmi_wide)
+```
+
+### Separating columns
+
+### Uniting columns
+
+### Addressing common symptoms of messy data
+
+- Column headers are values, not variable names
+  + eye colors as column names with boolean values in rows
+-Variable are stored in both rows and columns
+  + pet counts stored as key value pair in two columns. n_dogs and n_cats should be seperate columns
+- Multiple variables are stored in one column
+sex_age column with M.34, F.55 as values
+A single observational unit is stored in multiple tables
+Multiple types of observational units are stored in the same table
+This should be split into two tables with key like most sql beginner data sets of sales and sales persons
+
+### Column headers are values, not variable names
+
+
 ## Preparing data for analysis
 

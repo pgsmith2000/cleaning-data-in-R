@@ -15,6 +15,17 @@ Paul G. Smith
           - [Look at the data](#look-at-the-data)
           - [Visualizing the data](#visualizing-the-data)
       - [Tidying data](#tidying-data)
+          - [Introduction to tidy data](#introduction-to-tidy-data)
+          - [Introduction to tidyr](#introduction-to-tidyr)
+          - [Gathering columns into
+            key-value-pairs](#gathering-columns-into-key-value-pairs)
+          - [Spreading key-value pairs](#spreading-key-value-pairs)
+          - [Separating columns](#separating-columns)
+          - [Uniting columns](#uniting-columns)
+          - [Addressing common symptoms of messy
+            data](#addressing-common-symptoms-of-messy-data)
+          - [Column headers are values, not variable
+            names](#column-headers-are-values-not-variable-names)
       - [Preparing data for analysis](#preparing-data-for-analysis)
 
 # Cleaning Data With R
@@ -716,5 +727,153 @@ plot(bmi$Y1980, bmi$Y2008)
 ![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
 ## Tidying data
+
+### Introduction to tidy data
+
+  - Hadley Wickham’s paper on this from 2014 is the best resource for
+    understanding what is tidy data
+  - Essentially it mean one row per observation and one type of
+    observation per table
+      - Observations as rows
+      - Variables as columns
+      - One type of observational unit per table
+  - If you see values in the column names like months or years, or stock
+    names, you have untidy data
+
+### Introduction to tidyr
+
+Could do a whole notebook on this package, it does a lot Here we really
+just use: - *gather* combines multiple columns into two rows with key
+and value - *spread* moves key value columns to multiple columns with
+keys as column names - *separate* splits a column by \_ or whatever
+seperator you choose to multiple columns - *unite* combines multiple
+columns to one column with \_ as the seperator
+
+### Gathering columns into key-value-pairs
+
+``` r
+# load tidyr
+library(tidyr)
+
+# look at the first 6 rows
+head(bmi)
+```
+
+    ##               Country    Y1980    Y1981    Y1982    Y1983    Y1984
+    ## 1         Afghanistan 21.48678 21.46552 21.45145 21.43822 21.42734
+    ## 2             Albania 25.22533 25.23981 25.25636 25.27176 25.27901
+    ## 3             Algeria 22.25703 22.34745 22.43647 22.52105 22.60633
+    ## 4             Andorra 25.66652 25.70868 25.74681 25.78250 25.81874
+    ## 5              Angola 20.94876 20.94371 20.93754 20.93187 20.93569
+    ## 6 Antigua and Barbuda 23.31424 23.39054 23.45883 23.53735 23.63584
+    ##      Y1985    Y1986    Y1987    Y1988    Y1989    Y1990    Y1991    Y1992
+    ## 1 21.41222 21.40132 21.37679 21.34018 21.29845 21.24818 21.20269 21.14238
+    ## 2 25.28669 25.29451 25.30217 25.30450 25.31944 25.32357 25.28452 25.23077
+    ## 3 22.69501 22.76979 22.84096 22.90644 22.97931 23.04600 23.11333 23.18776
+    ## 4 25.85236 25.89089 25.93414 25.98477 26.04450 26.10936 26.17912 26.24017
+    ## 5 20.94857 20.96030 20.98025 21.01375 21.05269 21.09007 21.12136 21.14987
+    ## 6 23.73109 23.83449 23.93649 24.05364 24.16347 24.26782 24.36568 24.45644
+    ##      Y1993    Y1994    Y1995    Y1996    Y1997    Y1998    Y1999    Y2000
+    ## 1 21.06376 20.97987 20.91132 20.85155 20.81307 20.78591 20.75469 20.69521
+    ## 2 25.21192 25.22115 25.25874 25.31097 25.33988 25.39116 25.46555 25.55835
+    ## 3 23.25764 23.32273 23.39526 23.46811 23.54160 23.61592 23.69486 23.77659
+    ## 4 26.30356 26.36793 26.43569 26.50769 26.58255 26.66337 26.75078 26.83179
+    ## 5 21.13938 21.14186 21.16022 21.19076 21.22621 21.27082 21.31954 21.37480
+    ## 6 24.54096 24.60945 24.66461 24.72544 24.78714 24.84936 24.91721 24.99158
+    ##      Y2001    Y2002    Y2003    Y2004    Y2005    Y2006    Y2007    Y2008
+    ## 1 20.62643 20.59848 20.58706 20.57759 20.58084 20.58749 20.60246 20.62058
+    ## 2 25.66701 25.77167 25.87274 25.98136 26.08939 26.20867 26.32753 26.44657
+    ## 3 23.86256 23.95294 24.05243 24.15957 24.27001 24.38270 24.48846 24.59620
+    ## 4 26.92373 27.02525 27.12481 27.23107 27.32827 27.43588 27.53363 27.63048
+    ## 5 21.43664 21.51765 21.59924 21.69218 21.80564 21.93881 22.08962 22.25083
+    ## 6 25.05857 25.13039 25.20713 25.29898 25.39965 25.51382 25.64247 25.76602
+
+``` r
+# Apply gather() to bmi and save the result as bmi_long
+bmi_long <- gather(bmi, year, bmi_val, -Country)
+
+# View the first 20 rows of the result
+head(bmi_long,20)
+```
+
+    ##                Country  year  bmi_val
+    ## 1          Afghanistan Y1980 21.48678
+    ## 2              Albania Y1980 25.22533
+    ## 3              Algeria Y1980 22.25703
+    ## 4              Andorra Y1980 25.66652
+    ## 5               Angola Y1980 20.94876
+    ## 6  Antigua and Barbuda Y1980 23.31424
+    ## 7            Argentina Y1980 25.37913
+    ## 8              Armenia Y1980 23.82469
+    ## 9            Australia Y1980 24.92729
+    ## 10             Austria Y1980 24.84097
+    ## 11          Azerbaijan Y1980 24.49375
+    ## 12             Bahamas Y1980 24.21064
+    ## 13             Bahrain Y1980 23.97588
+    ## 14          Bangladesh Y1980 20.51918
+    ## 15            Barbados Y1980 24.36372
+    ## 16             Belarus Y1980 24.90898
+    ## 17             Belgium Y1980 25.09879
+    ## 18              Belize Y1980 24.54345
+    ## 19               Benin Y1980 20.80754
+    ## 20             Bermuda Y1980 25.07881
+
+### Spreading key-value pairs
+
+``` r
+# Apply spread() to bmi_long
+bmi_wide <- spread(bmi_long, year, bmi_val)
+
+# View the head of bmi_wide
+head(bmi_wide)
+```
+
+    ##               Country    Y1980    Y1981    Y1982    Y1983    Y1984
+    ## 1         Afghanistan 21.48678 21.46552 21.45145 21.43822 21.42734
+    ## 2             Albania 25.22533 25.23981 25.25636 25.27176 25.27901
+    ## 3             Algeria 22.25703 22.34745 22.43647 22.52105 22.60633
+    ## 4             Andorra 25.66652 25.70868 25.74681 25.78250 25.81874
+    ## 5              Angola 20.94876 20.94371 20.93754 20.93187 20.93569
+    ## 6 Antigua and Barbuda 23.31424 23.39054 23.45883 23.53735 23.63584
+    ##      Y1985    Y1986    Y1987    Y1988    Y1989    Y1990    Y1991    Y1992
+    ## 1 21.41222 21.40132 21.37679 21.34018 21.29845 21.24818 21.20269 21.14238
+    ## 2 25.28669 25.29451 25.30217 25.30450 25.31944 25.32357 25.28452 25.23077
+    ## 3 22.69501 22.76979 22.84096 22.90644 22.97931 23.04600 23.11333 23.18776
+    ## 4 25.85236 25.89089 25.93414 25.98477 26.04450 26.10936 26.17912 26.24017
+    ## 5 20.94857 20.96030 20.98025 21.01375 21.05269 21.09007 21.12136 21.14987
+    ## 6 23.73109 23.83449 23.93649 24.05364 24.16347 24.26782 24.36568 24.45644
+    ##      Y1993    Y1994    Y1995    Y1996    Y1997    Y1998    Y1999    Y2000
+    ## 1 21.06376 20.97987 20.91132 20.85155 20.81307 20.78591 20.75469 20.69521
+    ## 2 25.21192 25.22115 25.25874 25.31097 25.33988 25.39116 25.46555 25.55835
+    ## 3 23.25764 23.32273 23.39526 23.46811 23.54160 23.61592 23.69486 23.77659
+    ## 4 26.30356 26.36793 26.43569 26.50769 26.58255 26.66337 26.75078 26.83179
+    ## 5 21.13938 21.14186 21.16022 21.19076 21.22621 21.27082 21.31954 21.37480
+    ## 6 24.54096 24.60945 24.66461 24.72544 24.78714 24.84936 24.91721 24.99158
+    ##      Y2001    Y2002    Y2003    Y2004    Y2005    Y2006    Y2007    Y2008
+    ## 1 20.62643 20.59848 20.58706 20.57759 20.58084 20.58749 20.60246 20.62058
+    ## 2 25.66701 25.77167 25.87274 25.98136 26.08939 26.20867 26.32753 26.44657
+    ## 3 23.86256 23.95294 24.05243 24.15957 24.27001 24.38270 24.48846 24.59620
+    ## 4 26.92373 27.02525 27.12481 27.23107 27.32827 27.43588 27.53363 27.63048
+    ## 5 21.43664 21.51765 21.59924 21.69218 21.80564 21.93881 22.08962 22.25083
+    ## 6 25.05857 25.13039 25.20713 25.29898 25.39965 25.51382 25.64247 25.76602
+
+### Separating columns
+
+### Uniting columns
+
+### Addressing common symptoms of messy data
+
+  - Column headers are values, not variable names
+      - eye colors as column names with boolean values in rows -Variable
+        are stored in both rows and columns
+      - pet counts stored as key value pair in two columns. n\_dogs and
+        n\_cats should be seperate columns
+  - Multiple variables are stored in one column sex\_age column with
+    M.34, F.55 as values A single observational unit is stored in
+    multiple tables Multiple types of observational units are stored in
+    the same table This should be split into two tables with key like
+    most sql beginner data sets of sales and sales persons
+
+### Column headers are values, not variable names
 
 ## Preparing data for analysis
