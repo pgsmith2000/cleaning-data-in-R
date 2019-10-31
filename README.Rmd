@@ -1,0 +1,98 @@
+---
+title: "Cleaning Data With R"
+author: "Paul G. Smith"
+date: "10/31/2019"
+output: 
+  github_document:
+    toc: true
+    html_preview: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Cleaning Data With R
+## Overview
+
+The purpose of this project is to highlight issues related to cleaning data, and demonstrating many common strategies and techniques using R programming to clean and prep the data for analysis.
+
+## Exploring raw data
+
+Essential R commands:
+
+- class, dim, names, str, glimpse, summary
+- head, tail, print
+- hist, plot
+- gather -> combines multiple columns into two rows with key and value (tidyr)
+- spread -> moves key value columns to multiple columns with keys as column names (tidyr)
+- separate - > splits a column by _ or whatever seperator you choose to multiple columns (tidyr)
+- unite -> combines multiple columns to one column with _ as the seperator (tidyr)
+- as.character
+- as.numeric
+- as.integer
+- as.factor
+- as.logical
+- ymd - (lubridate)
+- mdy - (lubridate)
+- hms - (lubridate)
+- ymd_hms - (lubridate)
+
+### What messy data looks like
+- X column is just the row number
+- days are spread but should be part of the date field and have one row per date
+- year and month and day should be one data column
+- measures are melted but should be each in a column
+- and so on…
+```{r messyData, echo=TRUE, message=TRUE, warning=TRUE}
+
+# load and prep sample tables
+weather <- read.csv("data/weather.csv", header=TRUE, sep=",", as.is=TRUE)
+
+# first look at a messy data set
+# look at the first 6 rows
+head(weather)
+# look at the last 6 rows
+tail(weather)  
+# look at a summary of the data
+str(weather)
+```
+
+
+### What clean data looks like
+- Each row is a daily record of the weather
+- There is a lot cleaned up here
+- We will clean this data set in the last section
+
+```{r cleanData, echo=TRUE, message=TRUE, warning=TRUE}
+
+# load and prep sample table
+weather_clean <- read.csv("./data/weather_clean.csv", header=TRUE, sep=",")
+weather_clean[3:23] <- lapply(weather_clean[3:23], as.numeric)
+weather_clean$events <- as.character(weather_clean$event)
+weather_clean$date <- as.POSIXct(weather_clean$date, tz="", format("%m/%d/%Y"))
+
+# look at the first 6 rows
+head(weather_clean)
+# look at the last 6 rows
+tail(weather_clean)  
+# look at a summary of the data
+str(weather_clean)
+
+```
+
+### Exploring raw data
+
+
+### Understanding the structure of the data
+
+### Looking at the data
+
+
+
+### Visualizing the data
+
+
+
+## Tidying data
+## Preparing data for analysis
